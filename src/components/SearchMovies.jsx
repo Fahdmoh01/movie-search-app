@@ -1,6 +1,8 @@
 import React, {useState} from 'react'
 
 import MovieCard from "./MovieCard"
+//import Pagination from "react-js-pagination"
+import Pagination from "./Pagination"
 
 const SearchMovies = () => {
 
@@ -9,6 +11,10 @@ const SearchMovies = () => {
 
     const [query, setQuery] = useState('');
     const [movies, setMovies] = useState([]); //This is an array because it's going to contain the related movies to be displayed
+   // const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [postsPerPage] = useState(10);
+
     // setQuery(){
 
     // }
@@ -28,6 +34,22 @@ const SearchMovies = () => {
         }    
     }
 
+    // Get current posts
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = movies.slice(indexOfFirstPost, indexOfLastPost);
+
+  // Change page
+  const renderMovies = currentPosts.filter(movie =>movie.poster_path).map( movie => (
+    <MovieCard movie={movie} key={movie.id}/>
+ ))
+
+ const paginate = pageNumber => setCurrentPage(pageNumber);
+//  const handlePageChange = ( pageNumber ) => {
+//     console.log( `active page is ${ pageNumber }` );
+//     setCurrentPage( pageNumber )
+//  };
+
     return (
         <div className="card-list">
             <form className="form"  onSubmit={SearchMovies}>
@@ -42,10 +64,26 @@ const SearchMovies = () => {
             }
             
             {
-            movies.filter(movie =>movie.poster_path).map( movie => (
-               <MovieCard movie={movie} key={movie.id}/>
-            ))
+            renderMovies
             }
+             <div className="pagination">
+            {/* <Pagination
+               activePage={ currentPage}
+               //itemsCountPerPage={ 5 }
+               totalItemsCount={ movies.length }
+               pageRangeDisplayed={ 3 }
+               onChange={ handlePageChange }
+            /> */}
+            <Pagination
+                postsPerPage={postsPerPage}
+                totalPosts={movies.length}
+                paginate={paginate}
+             />
+
+            </div> 
+
+            
+    
         </div>
     )
 }
